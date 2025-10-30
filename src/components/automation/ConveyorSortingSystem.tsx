@@ -12,14 +12,11 @@ interface ConveyorSortingSystemProps {
 
 interface Part {
   id: number;
-  x: number;
   color: string;
   shape: 'circle' | 'square' | 'triangle';
   size: 'small' | 'medium' | 'large';
-  sortedColor?: boolean;
-  sortedShape?: boolean;
-  sortedSize?: boolean;
-  _y?: number; // animated y position for sorting conveyors
+  phase: 0 | 1 | 2 | 3; // 0: main, 1: color, 2: shape, 3: size
+  progress: number; // 0 to 1 for each phase
 }
 
 const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning, parameters }) => {
@@ -43,10 +40,11 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
         const sizes: ('small' | 'medium' | 'large')[] = ['small', 'medium', 'large'];
         const newPart: Part = {
           id: nextId,
-          x: 0,
           color: colors[Math.floor(Math.random() * colors.length)],
           shape: shapes[Math.floor(Math.random() * shapes.length)],
-          size: sizes[Math.floor(Math.random() * sizes.length)]
+          size: sizes[Math.floor(Math.random() * sizes.length)],
+          phase: 0,
+          progress: 0
         };
         setParts(prev => [...prev, newPart]);
         setNextId(prev => prev + 1);
@@ -54,79 +52,218 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
 
       // Move parts along conveyor every 100ms
       moveTimer = setInterval(() => {
-        setParts(prev => {
-          // Hierarchical sorting: color → shape → size
-          return prev.map(part => {
-            let { x, sortedColor, sortedShape, sortedSize } = part;
-            let y = 540; // main conveyor y
-            // COLOR sorting station at x=200
-            if (!sortedColor && x >= 200) {
-              if (part.color === '#ef4444') {
-                y = 50;
-                sortedColor = true;
-              } else if (part.color === '#3b82f6') {
-                y = 120;
-                sortedColor = true;
-              } else if (part.color === '#10b981') {
-                y = 160;
-                sortedColor = true;
-              }
-            } else if (sortedColor) {
-              // Stay on color conveyor
-              if (part.color === '#ef4444')  y = 80; 
-              else if (part.color === '#3b82f6') y = 120;
-              else if (part.color === '#10b981') y = 160;
+        setParts(prev => prev.map(part => {
+          // Define path segments for each phase
+          // Phase 0: main conveyor (straight)
+          // Phase 1: color branch (diagonal or straight)
+          // Phase 2: shape branch (diagonal or straight)
+          // Phase 3: size branch (diagonal or straight)
+          const speed = parameters.speed / 400; // adjust for smoothness
+          let { phase, progress } = part;
+          let x = -140, y = 540;
+          // Main conveyor: -140,540 to 100,540
+          if (phase === 0) {
+            x = -140 + 240 * progress;
+            y = 540;
+            if (progress >= 1) { phase = 1; progress = 0; }
+          }
+          // Color branch
+          else if (phase === 1) {
+            if (part.color === '#ef4444') {
+              // Red: 100,540 to 430,175
+              x = 100 + 330 * progress;
+              y = 540 + (175-540) * progress;
+            } else if (part.color === '#3b82f6') {
+              // Blue: 100,540 to 430,540
+              x = 100 + 330 * progress;
+              y = 540;
+            } else if (part.color === '#10b981') {
+              // Green: 100,540 to 430,900
+              x = 100 + 330 * progress;
+              y = 540 + (900-540) * progress;
             }
-            // SHAPE sorting station at x=700 (on color lane)
-            if (sortedColor && !sortedShape && x >= 200) {
+            if (progress >= 1) { phase = 2; progress = 0; }
+          }
+          // Shape branch
+          else if (phase === 2) {
+            if (part.color === '#ef4444') {
               if (part.shape === 'circle') {
-                y = (part.color === '#ef4444') ? 40 : (part.color === '#3b82f6') ? 80 : 120;
-                sortedShape = true;
+                // 430,175 to 800,60
+                x = 430 + 370 * progress;
+                y = 175 + (60-175) * progress;
               } else if (part.shape === 'square') {
-                y = (part.color === '#ef4444') ? 60 : (part.color === '#3b82f6') ? 100 : 140;
-                sortedShape = true;
-              } else if (part.shape === 'triangle') {
-                y = (part.color === '#ef4444') ? 100 : (part.color === '#3b82f6') ? 140 : 180;
-                sortedShape = true;
+                // 430,175 to 800,180
+                x = 430 + 370 * progress;
+                y = 175 + (180-175) * progress;
+              } else {
+                // triangle: 430,175 to 800,300
+                x = 430 + 370 * progress;
+                y = 175 + (300-175) * progress;
               }
-            } else if (sortedShape) {
-              // Stay on shape conveyor
-              if (part.shape === 'circle') y = (part.color === '#ef4444') ? 40 : (part.color === '#3b82f6') ? 80 : 120;
-              else if (part.shape === 'square') y = (part.color === '#ef4444') ? 60 : (part.color === '#3b82f6') ? 100 : 140;
-              else if (part.shape === 'triangle') y = (part.color === '#ef4444') ? 100 : (part.color === '#3b82f6') ? 140 : 180;
-            }
-            // SIZE sorting station at x=600 (on shape lane)
-            if (sortedShape && !sortedSize && x >= 600) {
-              if (part.size === 'small') {
-                y = (part.shape === 'circle') ? 20 : (part.shape === 'square') ? 30 : 40;
-                sortedSize = true;
-              } else if (part.size === 'medium') {
-                y = (part.shape === 'circle') ? 60 : (part.shape === 'square') ? 70 : 80;
-                sortedSize = true;
-              } else if (part.size === 'large') {
-                y = (part.shape === 'circle') ? 100 : (part.shape === 'square') ? 110 : 120;
-                sortedSize = true;
+            } else if (part.color === '#3b82f6') {
+              if (part.shape === 'circle') {
+                // 430,540 to 800,420
+                x = 430 + 370 * progress;
+                y = 540 + (420-540) * progress;
+              } else if (part.shape === 'square') {
+                // 430,540 to 800,540
+                x = 430 + 370 * progress;
+                y = 540;
+              } else {
+                // triangle: 430,540 to 800,660
+                x = 430 + 370 * progress;
+                y = 540 + (660-540) * progress;
               }
-            } else if (sortedSize) {
-              // Stay on size conveyor
-              if (part.size === 'small') y = (part.shape === 'circle') ? 20 : (part.shape === 'square') ? 30 : 40;
-              else if (part.size === 'medium') y = (part.shape === 'circle') ? 60 : (part.shape === 'square') ? 70 : 80;
-              else if (part.size === 'large') y = (part.shape === 'circle') ? 100 : (part.shape === 'square') ? 110 : 120;
+            } else if (part.color === '#10b981') {
+              if (part.shape === 'circle') {
+                // 430,900 to 800,780
+                x = 430 + 370 * progress;
+                y = 900 + (780-900) * progress;
+              } else if (part.shape === 'square') {
+                // 430,900 to 800,900
+                x = 430 + 370 * progress;
+                y = 900;
+              } else {
+                // triangle: 430,900 to 800,1020
+                x = 430 + 370 * progress;
+                y = 900 + (1020-900) * progress;
+              }
             }
-            return {
-              ...part,
-              x: part.x + (parameters.speed / 10),
-              _y: y,
-              sortedColor,
-              sortedShape,
-              sortedSize
-            };
-          });
-        });
+            if (progress >= 1) { phase = 3; progress = 0; }
+          }
+          // Size branch
+          else if (phase === 3) {
+            // Red
+            if (part.color === '#ef4444') {
+              if (part.shape === 'circle') {
+                // 800,60 to 1150,20/60/100
+                if (part.size === 'small') {
+                  x = 800 + 350 * progress;
+                  y = 60 + (20-60) * progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * progress;
+                  y = 60;
+                } else {
+                  x = 800 + 350 * progress;
+                  y = 60 + (100-60) * progress;
+                }
+              } else if (part.shape === 'square') {
+                // 800,180 to 1150,140/180/220
+                if (part.size === 'small') {
+                  x = 800 + 350 * progress;
+                  y = 180 + (140-180) * progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * progress;
+                  y = 180;
+                } else {
+                  x = 800 + 350 * progress;
+                  y = 180 + (220-180) * progress;
+                }
+              } else {
+                // triangle: 800,300 to 1150,260/300/340
+                if (part.size === 'small') {
+                  x = 800 + 350 * progress;
+                  y = 300 + (260-300) * progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * progress;
+                  y = 300;
+                } else {
+                  x = 800 + 350 * progress;
+                  y = 300 + (340-300) * progress;
+                }
+              }
+            } else if (part.color === '#3b82f6') {
+              if (part.shape === 'circle') {
+                // 800,420 to 1150,380/420/460
+                if (part.size === 'small') {
+                  x = 800 + 350 * progress;
+                  y = 420 + (380-420) * progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * progress;
+                  y = 420;
+                } else {
+                  x = 800 + 350 * progress;
+                  y = 420 + (460-420) * progress;
+                }
+              } else if (part.shape === 'square') {
+                // 800,540 to 1150,500/540/580
+                if (part.size === 'small') {
+                  x = 800 + 350 * progress;
+                  y = 540 + (500-540) * progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * progress;
+                  y = 540;
+                } else {
+                  x = 800 + 350 * progress;
+                  y = 540 + (580-540) * progress;
+                }
+              } else {
+                // triangle: 800,660 to 1150,620/660/700
+                if (part.size === 'small') {
+                  x = 800 + 350 * progress;
+                  y = 660 + (620-660) * progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * progress;
+                  y = 660;
+                } else {
+                  x = 800 + 350 * progress;
+                  y = 660 + (700-660) * progress;
+                }
+              }
+            } else if (part.color === '#10b981') {
+              if (part.shape === 'circle') {
+                // 800,780 to 1150,740/780/820
+                if (part.size === 'small') {
+                  x = 800 + 350 * progress;
+                  y = 780 + (740-780) * progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * progress;
+                  y = 780;
+                } else {
+                  x = 800 + 350 * progress;
+                  y = 780 + (820-780) * progress;
+                }
+              } else if (part.shape === 'square') {
+                // 800,900 to 1150,860/900/940
+                if (part.size === 'small') {
+                  x = 800 + 350 * progress;
+                  y = 900 + (860-900) * progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * progress;
+                  y = 900;
+                } else {
+                  x = 800 + 350 * progress;
+                  y = 900 + (940-900) * progress;
+                }
+              } else {
+                // triangle: 800,1020 to 1150,980/1020/1060
+                if (part.size === 'small') {
+                  x = 800 + 350 * progress;
+                  y = 1020 + (980-1020) * progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * progress;
+                  y = 1020;
+                } else {
+                  x = 800 + 350 * progress;
+                  y = 1020 + (1060-1020) * progress;
+                }
+              }
+            }
+            // if (progress >= 1) { phase = 4; progress = 1; } // End (removed, use finished boolean instead)
+          }
+          // Advance progress
+          let finished = false;
+          if (phase < 3) progress = Math.min(progress + speed, 1);
+          else if (phase === 3) {
+            progress = Math.min(progress + speed, 1);
+            if (progress >= 1) finished = true;
+          }
+          return { ...part, phase, progress, finished };
+        }));
         // Remove parts that reached the end and update counts
         setParts(prev => {
           const remaining = prev.filter(part => {
-            if (part.x > 750) {
+            if ((part as any).finished) {
               setSortedCounts(counts => ({
                 ...counts,
                 red: counts.red + (part.color === '#ef4444' ? 1 : 0),
@@ -367,72 +504,163 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
         {/* Parts on Conveyor, following sorting paths */}
         {parts.map(part => {
           const size = getPartSize(part.size) * 2;
-          // Calculate x/y for each stage
-          let x = 200 + part.x * 2;
-          let y = 600;
-          if (part.sortedColor) {
-            if (part.color === '#ef4444') { x = 900 + (part.x-150)*2; y = 350; }
-            else if (part.color === '#3b82f6') { x = 900 + (part.x-150)*2; y = 600; }
-            else if (part.color === '#10b981') { x = 900 + (part.x-150)*2; y = 850; }
-          }
-          if (part.sortedShape) {
+          // Calculate x/y for each phase using the new animation logic
+          let x = -140, y = 540;
+          if (part.phase === 0) {
+            x = -140 + 240 * part.progress;
+            y = 540;
+          } else if (part.phase === 1) {
             if (part.color === '#ef4444') {
-              if (part.shape === 'circle') { x = 1400 + (part.x-350)*2; y = 200; }
-              else if (part.shape === 'square') { x = 1400 + (part.x-350)*2; y = 350; }
-              else if (part.shape === 'triangle') { x = 1400 + (part.x-350)*2; y = 500; }
+              x = 100 + 330 * part.progress;
+              y = 540 + (175-540) * part.progress;
             } else if (part.color === '#3b82f6') {
-              if (part.shape === 'circle') { x = 1400 + (part.x-350)*2; y = 450; }
-              else if (part.shape === 'square') { x = 1400 + (part.x-350)*2; y = 600; }
-              else if (part.shape === 'triangle') { x = 1400 + (part.x-350)*2; y = 750; }
+              x = 100 + 330 * part.progress;
+              y = 540;
             } else if (part.color === '#10b981') {
-              if (part.shape === 'circle') { x = 1400 + (part.x-350)*2; y = 700; }
-              else if (part.shape === 'square') { x = 1400 + (part.x-350)*2; y = 850; }
-              else if (part.shape === 'triangle') { x = 1400 + (part.x-350)*2; y = 1000; }
+              x = 100 + 330 * part.progress;
+              y = 540 + (900-540) * part.progress;
             }
-          }
-          if (part.sortedSize) {
-            // Final size lane for each color/shape/size
+          } else if (part.phase === 2) {
             if (part.color === '#ef4444') {
               if (part.shape === 'circle') {
-                if (part.size === 'small') { x = 2000 + (part.x-600)*2; y = 100; }
-                else if (part.size === 'medium') { x = 2000 + (part.x-600)*2; y = 200; }
-                else if (part.size === 'large') { x = 2000 + (part.x-600)*2; y = 300; }
+                x = 430 + 370 * part.progress;
+                y = 175 + (60-175) * part.progress;
               } else if (part.shape === 'square') {
-                if (part.size === 'small') { x = 2000 + (part.x-600)*2; y = 350; }
-                else if (part.size === 'medium') { x = 2000 + (part.x-600)*2; y = 450; }
-                else if (part.size === 'large') { x = 2000 + (part.x-600)*2; y = 550; }
-              } else if (part.shape === 'triangle') {
-                if (part.size === 'small') { x = 2000 + (part.x-600)*2; y = 500; }
-                else if (part.size === 'medium') { x = 2000 + (part.x-600)*2; y = 600; }
-                else if (part.size === 'large') { x = 2000 + (part.x-600)*2; y = 700; }
+                x = 430 + 370 * part.progress;
+                y = 175 + (180-175) * part.progress;
+              } else {
+                x = 430 + 370 * part.progress;
+                y = 175 + (300-175) * part.progress;
               }
             } else if (part.color === '#3b82f6') {
               if (part.shape === 'circle') {
-                if (part.size === 'small') { x = 2000 + (part.x-600)*2; y = 450; }
-                else if (part.size === 'medium') { x = 2000 + (part.x-600)*2; y = 550; }
-                else if (part.size === 'large') { x = 2000 + (part.x-600)*2; y = 650; }
+                x = 430 + 370 * part.progress;
+                y = 540 + (420-540) * part.progress;
               } else if (part.shape === 'square') {
-                if (part.size === 'small') { x = 2000 + (part.x-600)*2; y = 600; }
-                else if (part.size === 'medium') { x = 2000 + (part.x-600)*2; y = 700; }
-                else if (part.size === 'large') { x = 2000 + (part.x-600)*2; y = 800; }
-              } else if (part.shape === 'triangle') {
-                if (part.size === 'small') { x = 2000 + (part.x-600)*2; y = 750; }
-                else if (part.size === 'medium') { x = 2000 + (part.x-600)*2; y = 850; }
-                else if (part.size === 'large') { x = 2000 + (part.x-600)*2; y = 950; }
+                x = 430 + 370 * part.progress;
+                y = 540;
+              } else {
+                x = 430 + 370 * part.progress;
+                y = 540 + (660-540) * part.progress;
               }
             } else if (part.color === '#10b981') {
               if (part.shape === 'circle') {
-                if (part.size === 'small') { x = 2000 + (part.x-600)*2; y = 700; }
-                else if (part.size === 'medium') { x = 2000 + (part.x-600)*2; y = 800; }
-                else if (part.size === 'large') { x = 2000 + (part.x-600)*2; y = 900; }
+                x = 430 + 370 * part.progress;
+                y = 900 + (780-900) * part.progress;
               } else if (part.shape === 'square') {
-                if (part.size === 'small') { x = 2000 + (part.x-600)*2; y = 850; }
-                else if (part.size === 'medium') { x = 2000 + (part.x-600)*2; y = 950; }
-                else if (part.size === 'large') { x = 2000 + (part.x-600)*2; y = 1050; }
-              } else if (part.shape === 'triangle') {
-                if (part.size === 'small') { x = 2000 + (part.x-600)*2; y = 1000; }
-                else if (part.size === 'medium') { x = 2000 + (part.x-600)*2; y = 1100; }
-                else if (part.size === 'large') { x = 2000 + (part.x-600)*2; y = 1200; }
+                x = 430 + 370 * part.progress;
+                y = 900;
+              } else {
+                x = 430 + 370 * part.progress;
+                y = 900 + (1020-900) * part.progress;
+              }
+            }
+          } else if (part.phase === 3) {
+            // Red
+            if (part.color === '#ef4444') {
+              if (part.shape === 'circle') {
+                if (part.size === 'small') {
+                  x = 800 + 350 * part.progress;
+                  y = 60 + (20-60) * part.progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * part.progress;
+                  y = 60;
+                } else {
+                  x = 800 + 350 * part.progress;
+                  y = 60 + (100-60) * part.progress;
+                }
+              } else if (part.shape === 'square') {
+                if (part.size === 'small') {
+                  x = 800 + 350 * part.progress;
+                  y = 180 + (140-180) * part.progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * part.progress;
+                  y = 180;
+                } else {
+                  x = 800 + 350 * part.progress;
+                  y = 180 + (220-180) * part.progress;
+                }
+              } else {
+                if (part.size === 'small') {
+                  x = 800 + 350 * part.progress;
+                  y = 300 + (260-300) * part.progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * part.progress;
+                  y = 300;
+                } else {
+                  x = 800 + 350 * part.progress;
+                  y = 300 + (340-300) * part.progress;
+                }
+              }
+            } else if (part.color === '#3b82f6') {
+              if (part.shape === 'circle') {
+                if (part.size === 'small') {
+                  x = 800 + 350 * part.progress;
+                  y = 420 + (380-420) * part.progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * part.progress;
+                  y = 420;
+                } else {
+                  x = 800 + 350 * part.progress;
+                  y = 420 + (460-420) * part.progress;
+                }
+              } else if (part.shape === 'square') {
+                if (part.size === 'small') {
+                  x = 800 + 350 * part.progress;
+                  y = 540 + (500-540) * part.progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * part.progress;
+                  y = 540;
+                } else {
+                  x = 800 + 350 * part.progress;
+                  y = 540 + (580-540) * part.progress;
+                }
+              } else {
+                if (part.size === 'small') {
+                  x = 800 + 350 * part.progress;
+                  y = 660 + (620-660) * part.progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * part.progress;
+                  y = 660;
+                } else {
+                  x = 800 + 350 * part.progress;
+                  y = 660 + (700-660) * part.progress;
+                }
+              }
+            } else if (part.color === '#10b981') {
+              if (part.shape === 'circle') {
+                if (part.size === 'small') {
+                  x = 800 + 350 * part.progress;
+                  y = 780 + (740-780) * part.progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * part.progress;
+                  y = 780;
+                } else {
+                  x = 800 + 350 * part.progress;
+                  y = 780 + (820-780) * part.progress;
+                }
+              } else if (part.shape === 'square') {
+                if (part.size === 'small') {
+                  x = 800 + 350 * part.progress;
+                  y = 900 + (860-900) * part.progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * part.progress;
+                  y = 900;
+                } else {
+                  x = 800 + 350 * part.progress;
+                  y = 900 + (940-900) * part.progress;
+                }
+              } else {
+                if (part.size === 'small') {
+                  x = 800 + 350 * part.progress;
+                  y = 1020 + (980-1020) * part.progress;
+                } else if (part.size === 'medium') {
+                  x = 800 + 350 * part.progress;
+                  y = 1020;
+                } else {
+                  x = 800 + 350 * part.progress;
+                  y = 1020 + (1060-1020) * part.progress;
+                }
               }
             }
           }
