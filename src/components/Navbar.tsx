@@ -48,7 +48,7 @@ const Navbar: React.FC = () => {
               className="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent hover:scale-105 transition-transform cursor-pointer"
             >
               <Home className="w-6 h-6 text-cyan-400" />
-              Portfolio
+              JReyes_Portfolio
             </button>
           </div>
           

@@ -50,7 +50,7 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
         };
         setParts(prev => [...prev, newPart]);
         setNextId(prev => prev + 1);
-      }, 2000);
+      }, 2500); // timer for part creation... every 2.5 seconds
 
       // Move parts along conveyor every 100ms
       moveTimer = setInterval(() => {
@@ -58,11 +58,11 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
           // Hierarchical sorting: color → shape → size
           return prev.map(part => {
             let { x, sortedColor, sortedShape, sortedSize } = part;
-            let y = 200; // main conveyor y
+            let y = 540; // main conveyor y
             // COLOR sorting station at x=200
             if (!sortedColor && x >= 200) {
               if (part.color === '#ef4444') {
-                y = 80;
+                y = 50;
                 sortedColor = true;
               } else if (part.color === '#3b82f6') {
                 y = 120;
@@ -73,12 +73,12 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
               }
             } else if (sortedColor) {
               // Stay on color conveyor
-              if (part.color === '#ef4444') y = 80;
+              if (part.color === '#ef4444')  y = 80; 
               else if (part.color === '#3b82f6') y = 120;
               else if (part.color === '#10b981') y = 160;
             }
-            // SHAPE sorting station at x=400 (on color lane)
-            if (sortedColor && !sortedShape && x >= 400) {
+            // SHAPE sorting station at x=700 (on color lane)
+            if (sortedColor && !sortedShape && x >= 200) {
               if (part.shape === 'circle') {
                 y = (part.color === '#ef4444') ? 40 : (part.color === '#3b82f6') ? 80 : 120;
                 sortedShape = true;
@@ -160,207 +160,208 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
 
   const getPartSize = (size: string) => {
     switch(size) {
-      case 'small': return 15;
-      case 'medium': return 25;
-      case 'large': return 35;
-      default: return 25;
+      case 'small': return 10;
+      case 'medium': return 15;
+      case 'large': return 20;
+      default: return 15;
     }
   };
 
   return (
     <div className="flex justify-center items-center w-full h-[80vh] min-h-[600px] max-h-[900px] bg-gray-900/50 rounded-lg p-4 overflow-x-auto">
-      <svg viewBox="0 0 1200 900" className="w-full h-full max-w-full max-h-full min-w-[700px] min-h-[500px]" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox="0 0 1100 1080" className="w-full h-full max-w-full max-h-full min-w-[700px] min-h-[500px]" preserveAspectRatio="xMidYMid meet">
         {/* Backgrounds for each sorting stage */}
-        <rect x="0" y="0" width="1200" height="220" fill="#f1f5f9" opacity="0.3" />
+        {/* <rect x="0" y="0" width="1200" height="220" fill="#f1f5f9" opacity="0.3" />
         <rect x="0" y="220" width="1200" height="220" fill="#e0e7ef" opacity="0.3" />
-        <rect x="0" y="440" width="1200" height="440" fill="#fef9c3" opacity="0.3" />
+        <rect x="0" y="440" width="1200" height="440" fill="#fef9c3" opacity="0.3" /> */}
 
         {/* Main conveyor - centered vertically at y=410 */}
-        <rect x="100" y="410" width="700" height="40" fill="#374151" stroke="#6b7280" strokeWidth="3" rx="10" />
-        <rect x="100" y="420" width="700" height="20" fill="#4b5563" rx="8" />
-        <text x="450" y="400" fontSize="16" fill="#222" fontWeight="bold">Main Conveyor</text>
+        <rect x="-140" y="520" width="250" height="40" fill="#374151" stroke="#6b7280" strokeWidth="3" rx="10" />
+        <rect x="-140" y="530" width="250" height="20" fill="#4b5563" rx="8" />
+        <text x="-50" y="500" fontSize="16" fill="#cf0c30ff" fontWeight="bold">Main Conveyor</text>
 
         {/* Color conveyors (branch at x=250, y=430) */}
-        <line x1="250" y1="430" x2="400" y2="90" stroke="#ef4444" strokeWidth="8" opacity="0.7" />
-        <line x1="250" y1="430" x2="400" y2="430" stroke="#3b82f6" strokeWidth="8" opacity="0.7" />
-        <line x1="250" y1="430" x2="400" y2="770" stroke="#10b981" strokeWidth="8" opacity="0.7" />
-        <text x="410" y="100" fontSize="14" fill="#ef4444" fontWeight="bold">Red Lane</text>
-        <text x="410" y="440" fontSize="14" fill="#3b82f6" fontWeight="bold">Blue Lane</text>
-        <text x="410" y="780" fontSize="14" fill="#10b981" fontWeight="bold">Green Lane</text>
+        <line x1="100" y1="540" x2="430" y2="175" stroke="#ef4444" strokeWidth="8" opacity="0.7" />
+        <line x1="100" y1="540" x2="430" y2="540" stroke="#3b82f6" strokeWidth="8" opacity="0.7" />
+        <line x1="100" y1="540" x2="430" y2="900" stroke="#10b981" strokeWidth="8" opacity="0.7" />
+        <text x="200" y="300" fontSize="14" fill="#ef4444" fontWeight="bold">Red Parts</text>
+        <text x="200" y="520" fontSize="14" fill="#3b82f6" fontWeight="bold">Blue Parts</text>
+        <text x="200" y="780" fontSize="14" fill="#10b981" fontWeight="bold">Green Parts</text>
 
         {/* Shape conveyors (3 for each color, branch at x=600) */}
         {/* Red */}
-        <line x1="600" y1="90" x2="800" y2="60" stroke="#ef4444" strokeWidth="6" opacity="0.7" />
-        <line x1="600" y1="90" x2="800" y2="90" stroke="#ef4444" strokeWidth="6" opacity="0.7" />
-        <line x1="600" y1="90" x2="800" y2="120" stroke="#ef4444" strokeWidth="6" opacity="0.7" />
-        <text x="810" y="70" fontSize="12" fill="#ef4444">Circle</text>
-        <text x="810" y="100" fontSize="12" fill="#ef4444">Square</text>
-        <text x="810" y="130" fontSize="12" fill="#ef4444">Triangle</text>
+        <line x1="430" y1="175" x2="800" y2="60" stroke="#ef4444" strokeWidth="6" opacity="0.7" />
+        <line x1="430" y1="175" x2="800" y2="180" stroke="#ef4444" strokeWidth="6" opacity="0.7" />
+        <line x1="430" y1="175" x2="800" y2="300" stroke="#ef4444" strokeWidth="6" opacity="0.7" />
+        <text x="600" y="90" fontSize="12" fill="#ef4444">Circle</text>
+        <text x="600" y="160" fontSize="12" fill="#ef4444">Square</text>
+        <text x="600" y="280" fontSize="12" fill="#ef4444">Triangle</text>
         {/* Blue */}
-        <line x1="600" y1="430" x2="800" y2="400" stroke="#3b82f6" strokeWidth="6" opacity="0.7" />
-        <line x1="600" y1="430" x2="800" y2="430" stroke="#3b82f6" strokeWidth="6" opacity="0.7" />
-        <line x1="600" y1="430" x2="800" y2="460" stroke="#3b82f6" strokeWidth="6" opacity="0.7" />
-        <text x="810" y="410" fontSize="12" fill="#3b82f6">Circle</text>
-        <text x="810" y="440" fontSize="12" fill="#3b82f6">Square</text>
-        <text x="810" y="470" fontSize="12" fill="#3b82f6">Triangle</text>
+        <line x1="430" y1="540" x2="800" y2="420" stroke="#3b82f6" strokeWidth="6" opacity="0.7" />
+        <line x1="430" y1="540" x2="800" y2="540" stroke="#3b82f6" strokeWidth="6" opacity="0.7" />
+        <line x1="430" y1="540" x2="800" y2="660" stroke="#3b82f6" strokeWidth="6" opacity="0.7" />
+        <text x="600" y="450" fontSize="12" fill="#3b82f6">Circle</text>
+        <text x="600" y="520" fontSize="12" fill="#3b82f6">Square</text>
+        <text x="600" y="640" fontSize="12" fill="#3b82f6">Triangle</text>
         {/* Green */}
-        <line x1="600" y1="770" x2="800" y2="740" stroke="#10b981" strokeWidth="6" opacity="0.7" />
-        <line x1="600" y1="770" x2="800" y2="770" stroke="#10b981" strokeWidth="6" opacity="0.7" />
-        <line x1="600" y1="770" x2="800" y2="800" stroke="#10b981" strokeWidth="6" opacity="0.7" />
-        <text x="810" y="750" fontSize="12" fill="#10b981">Circle</text>
-        <text x="810" y="780" fontSize="12" fill="#10b981">Square</text>
-        <text x="810" y="810" fontSize="12" fill="#10b981">Triangle</text>
+        <line x1="430" y1="900" x2="800" y2="780" stroke="#10b981" strokeWidth="6" opacity="0.7" />
+        <line x1="430" y1="900" x2="800" y2="900" stroke="#10b981" strokeWidth="6" opacity="0.7" />
+        <line x1="430" y1="900" x2="800" y2="1020" stroke="#10b981" strokeWidth="6" opacity="0.7" />
+        <text x="600" y="810" fontSize="12" fill="#10b981">Circle</text>
+        <text x="600" y="890" fontSize="12" fill="#10b981">Square</text>
+        <text x="600" y="1010" fontSize="12" fill="#10b981">Triangle</text>
 
         {/* Size conveyors (3 for each shape, branch at x=1000) */}
         {/* Red-Circle */}
-        <line x1="1000" y1="60" x2="1150" y2="50" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="60" x2="1150" y2="60" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="60" x2="1150" y2="70" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <text x="1160" y="55" fontSize="11" fill="#b45309">Small</text>
-        <text x="1160" y="65" fontSize="11" fill="#b45309">Medium</text>
-        <text x="1160" y="75" fontSize="11" fill="#b45309">Large</text>
+        <line x1="800" y1="60" x2="1150" y2="20" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="60" x2="1150" y2="60" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="60" x2="1150" y2="100" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
+        <text x="1175" y="13" fontSize="10" fill="#ef4444">Red Circle Sm</text>
+        <text x="1175" y="48" fontSize="10" fill="#ef4444">Red Circle Med</text>
+        <text x="1175" y="83" fontSize="10" fill="#ef4444">Red Circle Lg</text>
         {/* Red-Square */}
-        <line x1="1000" y1="90" x2="1150" y2="80" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="90" x2="1150" y2="90" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="90" x2="1150" y2="100" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="180" x2="1150" y2="140" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="180" x2="1150" y2="180" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="180" x2="1150" y2="220" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
         {/* Red-Triangle */}
-        <line x1="1000" y1="120" x2="1150" y2="110" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="120" x2="1150" y2="120" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="120" x2="1150" y2="130" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="300" x2="1150" y2="260" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="300" x2="1150" y2="300" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="300" x2="1150" y2="340" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
         {/* Blue-Circle */}
-        <line x1="1000" y1="400" x2="1150" y2="390" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="400" x2="1150" y2="400" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="400" x2="1150" y2="410" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="420" x2="1150" y2="380" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="420" x2="1150" y2="420" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="420" x2="1150" y2="460" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
         {/* Blue-Square */}
-        <line x1="1000" y1="430" x2="1150" y2="420" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="430" x2="1150" y2="430" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="430" x2="1150" y2="440" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="540" x2="1150" y2="500" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="540" x2="1150" y2="540" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="540" x2="1150" y2="580" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
         {/* Blue-Triangle */}
-        <line x1="1000" y1="460" x2="1150" y2="450" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="460" x2="1150" y2="460" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="460" x2="1150" y2="470" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="660" x2="1150" y2="620" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="660" x2="1150" y2="660" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="660" x2="1150" y2="700" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
         {/* Green-Circle */}
-        <line x1="1000" y1="740" x2="1150" y2="730" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="740" x2="1150" y2="740" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="740" x2="1150" y2="750" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="780" x2="1150" y2="740" stroke="#10b981" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="780" x2="1150" y2="780" stroke="#10b981" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="780" x2="1150" y2="820" stroke="#10b981" strokeWidth="4" opacity="0.9" />
         {/* Green-Square */}
-        <line x1="1000" y1="770" x2="1150" y2="760" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="770" x2="1150" y2="770" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="770" x2="1150" y2="780" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="900" x2="1150" y2="860" stroke="#10b981" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="900" x2="1150" y2="900" stroke="#10b981" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="900" x2="1150" y2="940" stroke="#10b981" strokeWidth="4" opacity="0.9" />
         {/* Green-Triangle */}
-        <line x1="1000" y1="800" x2="1150" y2="790" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="800" x2="1150" y2="800" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
-        <line x1="1000" y1="800" x2="1150" y2="810" stroke="#fbbf24" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="1020" x2="1150" y2="980" stroke="#10b981" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="1020" x2="1150" y2="1020" stroke="#10b981" strokeWidth="4" opacity="0.9" />
+        <line x1="800" y1="1020" x2="1150" y2="1060" stroke="#10b981" strokeWidth="4" opacity="0.9" />
 
         {/* End lane counters for all 27 stations, spaced closer together */}
         {/* Example for a few, repeat for all 27 */}
+        
         <g>
-          <rect x="1170" y="50" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="63" fontSize="11" fill="#b45309" fontWeight="bold">{counters[0]}</text>
+          {/* <rect x="1170" y="0" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="20" fontSize="15" fill="#b45309" fontWeight="bold">{counters[0]}</text>
         </g>
         <g>
-          <rect x="1170" y="70" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="83" fontSize="11" fill="#b45309" fontWeight="bold">{counters[1]}</text>
+          {/* <rect x="1170" y="35" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="60" fontSize="15" fill="#b45309" fontWeight="bold">{counters[1]}</text>
         </g>
         <g>
-          <rect x="1170" y="90" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="103" fontSize="11" fill="#b45309" fontWeight="bold">{counters[2]}</text>
+          {/* <rect x="1170" y="70" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="100" fontSize="15" fill="#b45309" fontWeight="bold">{counters[2]}</text>
         </g>
         <g>
-          <rect x="1170" y="110" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="123" fontSize="11" fill="#b45309" fontWeight="bold">{counters[3]}</text>
+          {/* <rect x="1170" y="105" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="140" fontSize="15" fill="#b45309" fontWeight="bold">{counters[3]}</text>
         </g>
         <g>
-          <rect x="1170" y="130" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="143" fontSize="11" fill="#b45309" fontWeight="bold">{counters[4]}</text>
+          {/* <rect x="1170" y="140" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="180" fontSize="15" fill="#b45309" fontWeight="bold">{counters[4]}</text>
         </g>
         <g>
-          <rect x="1170" y="150" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="163" fontSize="11" fill="#b45309" fontWeight="bold">{counters[5]}</text>
+          {/* <rect x="1170" y="175" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="220" fontSize="15" fill="#b45309" fontWeight="bold">{counters[5]}</text>
         </g>
         <g>
-          <rect x="1170" y="170" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="183" fontSize="11" fill="#b45309" fontWeight="bold">{counters[6]}</text>
+          {/* <rect x="1170" y="210" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="260" fontSize="15" fill="#b45309" fontWeight="bold">{counters[6]}</text>
         </g>
         <g>
-          <rect x="1170" y="190" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="203" fontSize="11" fill="#b45309" fontWeight="bold">{counters[7]}</text>
+          {/* <rect x="1170" y="245" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="300" fontSize="15" fill="#b45309" fontWeight="bold">{counters[7]}</text>
         </g>
         <g>
-          <rect x="1170" y="210" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="223" fontSize="11" fill="#b45309" fontWeight="bold">{counters[8]}</text>
+          {/* <rect x="1170" y="280" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="340" fontSize="15" fill="#b45309" fontWeight="bold">{counters[8]}</text>
         </g>
         <g>
-          <rect x="1170" y="230" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="243" fontSize="11" fill="#b45309" fontWeight="bold">{counters[9]}</text>
+          {/* <rect x="1170" y="315" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="380" fontSize="15" fill="#b45309" fontWeight="bold">{counters[9]}</text>
         </g>
         <g>
-          <rect x="1170" y="250" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="263" fontSize="11" fill="#b45309" fontWeight="bold">{counters[10]}</text>
+          {/* <rect x="1170" y="350" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="420" fontSize="15" fill="#b45309" fontWeight="bold">{counters[10]}</text>
         </g>
         <g>
-          <rect x="1170" y="270" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="283" fontSize="11" fill="#b45309" fontWeight="bold">{counters[11]}</text>
+          {/* <rect x="1170" y="385" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="460" fontSize="15" fill="#b45309" fontWeight="bold">{counters[11]}</text>
         </g>
         <g>
-          <rect x="1170" y="290" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="303" fontSize="11" fill="#b45309" fontWeight="bold">{counters[12]}</text>
+          {/* <rect x="1170" y="420" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="500" fontSize="15" fill="#b45309" fontWeight="bold">{counters[12]}</text>
         </g>
         <g>
-          <rect x="1170" y="310" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="323" fontSize="11" fill="#b45309" fontWeight="bold">{counters[13]}</text>
+          {/* <rect x="1170" y="455" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="540" fontSize="15" fill="#b45309" fontWeight="bold">{counters[13]}</text>
         </g>
         <g>
-          <rect x="1170" y="330" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="343" fontSize="11" fill="#b45309" fontWeight="bold">{counters[14]}</text>
+          {/* <rect x="1170" y="490" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="580" fontSize="15" fill="#b45309" fontWeight="bold">{counters[14]}</text>
         </g>
         <g>
-          <rect x="1170" y="350" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="363" fontSize="11" fill="#b45309" fontWeight="bold">{counters[15]}</text>
+          {/* <rect x="1170" y="525" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="620" fontSize="15" fill="#b45309" fontWeight="bold">{counters[15]}</text>
         </g>
         <g>
-          <rect x="1170" y="370" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="383" fontSize="11" fill="#b45309" fontWeight="bold">{counters[16]}</text>
+          {/* <rect x="1170" y="560" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="660" fontSize="15" fill="#b45309" fontWeight="bold">{counters[16]}</text>
         </g>
         <g>
-          <rect x="1170" y="390" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="403" fontSize="11" fill="#b45309" fontWeight="bold">{counters[17]}</text>
+          {/* <rect x="1170" y="595" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="700" fontSize="15" fill="#b45309" fontWeight="bold">{counters[17]}</text>
         </g>
         <g>
-          <rect x="1170" y="410" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="423" fontSize="11" fill="#b45309" fontWeight="bold">{counters[18]}</text>
+          {/* <rect x="1170" y="630" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="740" fontSize="15" fill="#b45309" fontWeight="bold">{counters[18]}</text>
         </g>
         <g>
-          <rect x="1170" y="430" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="443" fontSize="11" fill="#b45309" fontWeight="bold">{counters[19]}</text>
+          {/* <rect x="1170" y="665" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="780" fontSize="15" fill="#b45309" fontWeight="bold">{counters[19]}</text>
         </g>
         <g>
-          <rect x="1170" y="450" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="463" fontSize="11" fill="#b45309" fontWeight="bold">{counters[20]}</text>
+          {/* <rect x="1170" y="700" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="820" fontSize="15" fill="#b45309" fontWeight="bold">{counters[20]}</text>
         </g>
         <g>
-          <rect x="1170" y="470" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="483" fontSize="11" fill="#b45309" fontWeight="bold">{counters[21]}</text>
+          {/* <rect x="1170" y="735" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="860" fontSize="15" fill="#b45309" fontWeight="bold">{counters[21]}</text>
         </g>
         <g>
-          <rect x="1170" y="490" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="503" fontSize="11" fill="#b45309" fontWeight="bold">{counters[22]}</text>
+          {/* <rect x="1170" y="770" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="900" fontSize="15" fill="#b45309" fontWeight="bold">{counters[22]}</text>
         </g>
         <g>
-          <rect x="1170" y="510" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="523" fontSize="11" fill="#b45309" fontWeight="bold">{counters[23]}</text>
+          {/* <rect x="1170" y="805" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="940" fontSize="15" fill="#b45309" fontWeight="bold">{counters[23]}</text>
         </g>
         <g>
-          <rect x="1170" y="530" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="543" fontSize="11" fill="#b45309" fontWeight="bold">{counters[24]}</text>
+          {/* <rect x="1170" y="840" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="980" fontSize="15" fill="#b45309" fontWeight="bold">{counters[24]}</text>
         </g>
         <g>
-          <rect x="1170" y="550" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="563" fontSize="11" fill="#b45309" fontWeight="bold">{counters[25]}</text>
+          {/* <rect x="1170" y="875" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="1020" fontSize="15" fill="#b45309" fontWeight="bold">{counters[25]}</text>
         </g>
         <g>
-          <rect x="1170" y="570" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" />
-          <text x="1182" y="583" fontSize="11" fill="#b45309" fontWeight="bold">{counters[26]}</text>
+          {/* <rect x="1170" y="910" width="24" height="16" rx="5" fill="#fff" stroke="#b45309" strokeWidth="2" /> */}
+          <text x="1150" y="1060" fontSize="15" fill="#b45309" fontWeight="bold">{counters[26]}</text>
         </g>
 
         {/* Parts on Conveyor, following sorting paths */}
@@ -456,10 +457,10 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
         })}
 
         {/* Labels */}
-        <text x="1100" y="120" textAnchor="middle" fill="#22d3ee" fontSize="36" fontWeight="bold">
+        <text x="250" y="50" textAnchor="middle" fill="#22d3ee" fontSize="36" fontWeight="bold">
           Conveyor Sorting System
         </text>
-        <text x="1100" y="170" textAnchor="middle" fill="#9ca3af" fontSize="22">
+        <text x="200" y="90" textAnchor="middle" fill="#9ca3af" fontSize="22">
           Speed: {parameters.speed}% | Parts on Belt: {parts.length}
         </text>
       </svg>

@@ -110,7 +110,7 @@ const HeroSection: React.FC = () => {
             onClick={() => scrollToSection('automation')}
             className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-2xl hover:shadow-cyan-500/25 transform hover:-translate-y-1 transition-all duration-200"
           >
-            Explore Projects
+            Explore My Projects
           </button>
           <button
             onClick={() => scrollToSection('contact')}
