@@ -10,8 +10,17 @@ const ResumeModal: React.FC<ResumeModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const handleDownload = () => {
-    alert('Resume download would be triggered here');
+    // Download resume.pdf from public folder
+    const link = document.createElement('a');
+    link.href = '/resume.pdf';
+    link.download = 'Jorge_Reyes_Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
+
+
+
 
   return (
     <div 
