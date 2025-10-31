@@ -5,8 +5,8 @@ const AboutSection: React.FC = () => {
   const achievements = [
     { icon: <Award className="w-6 h-6" />, value: '50+', label: 'Projects Completed' },
     { icon: <Users className="w-6 h-6" />, value: '30+', label: 'Happy Clients' },
-    { icon: <BookOpen className="w-6 h-6" />, value: '15+', label: 'Certifications' },
-    { icon: <Target className="w-6 h-6" />, value: '99%', label: 'Success Rate' }
+    { icon: <BookOpen className="w-6 h-6" />, value: '10+', label: 'Certifications' },
+    { icon: <Target className="w-6 h-6" />, value: '+90%', label: 'Success Rate' }
   ];
 
   const timeline = [
