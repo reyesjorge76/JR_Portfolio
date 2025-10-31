@@ -1,3 +1,11 @@
+  // Map color, shape, size to a unique index (0-26)
+  const getCounterIndex = (color: string, shape: string, size: string) => {
+    // Order: color (0: red, 1: blue, 2: green), shape (0: circle, 1: square, 2: triangle), size (0: small, 1: medium, 2: large)
+    const colorIdx = color === '#ef4444' ? 0 : color === '#3b82f6' ? 1 : 2;
+    const shapeIdx = shape === 'circle' ? 0 : shape === 'square' ? 1 : 2;
+    const sizeIdx = size === 'small' ? 0 : size === 'medium' ? 1 : 2;
+    return colorIdx * 9 + shapeIdx * 3 + sizeIdx;
+  };
 import React, { useState, useEffect } from 'react';
 
 interface ConveyorSortingSystemProps {
@@ -7,6 +15,8 @@ interface ConveyorSortingSystemProps {
     temperature: number;
     pressure: number;
     recipe: string;
+    partsPerSecond?: number;
+    reset?: boolean;
   };
 }
 
@@ -29,11 +39,26 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
   const [nextId, setNextId] = useState(1);
   const [counters, setCounters] = useState<number[]>(Array(27).fill(0));
 
+  // Reset effect
+  useEffect(() => {
+    if (parameters.reset) {
+      setParts([]);
+      setCounters(Array(27).fill(0));
+      setSortedCounts({
+        red: 0, blue: 0, green: 0,
+        circle: 0, square: 0, triangle: 0,
+        small: 0, medium: 0, large: 0
+      });
+      setNextId(1);
+    }
+  }, [parameters.reset]);
+
   useEffect(() => {
     let partTimer: NodeJS.Timeout | null = null;
     let moveTimer: NodeJS.Timeout | null = null;
     if (isRunning) {
-      // Throttle part generation: add a new part every 2 seconds
+      // Throttle part generation: add a new part every X ms (1-5 per second)
+      const intervalMs = 1000 / (parameters.partsPerSecond || 1);
       partTimer = setInterval(() => {
         const colors = ['#ef4444', '#3b82f6', '#10b981'];
         const shapes: ('circle' | 'square' | 'triangle')[] = ['circle', 'square', 'triangle'];
@@ -48,7 +73,8 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
         };
         setParts(prev => [...prev, newPart]);
         setNextId(prev => prev + 1);
-      }, 2500); // timer for part creation... every 2.5 seconds
+  }, intervalMs); // timer for part creation, adjustable
+
 
       // Move parts along conveyor every 100ms
       moveTimer = setInterval(() => {
@@ -262,8 +288,17 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
         }));
         // Remove parts that reached the end and update counts
         setParts(prev => {
+          const toRemove: typeof prev = [];
           const remaining = prev.filter(part => {
             if ((part as any).finished) {
+              // Update 27-lane counters
+              const idx = getCounterIndex(part.color, part.shape, part.size);
+              setCounters(counters => {
+                const updated = [...counters];
+                updated[idx]++;
+                return updated;
+              });
+              // Optionally update sortedCounts if still needed
               setSortedCounts(counts => ({
                 ...counts,
                 red: counts.red + (part.color === '#ef4444' ? 1 : 0),
@@ -305,8 +340,8 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
   };
 
   return (
-    <div className="flex justify-center items-center w-full h-[80vh] min-h-[600px] max-h-[900px] bg-gray-900/50 rounded-lg p-4 overflow-x-auto">
-      <svg viewBox="0 0 1100 1080" className="w-full h-full max-w-full max-h-full min-w-[700px] min-h-[500px]" preserveAspectRatio="xMidYMid meet">
+    <div className="flex justify-center items-center w-full h-[100vh] min-h-[300px] max-h-[910px] bg-gray-900/50 rounded-lg p-4 overflow-x-auto">
+      <svg viewBox="0 0 1100 1080" className="w-full h-full max-w-full max-h-full min-w-[200px] min-h-[200px]" preserveAspectRatio="xMidYMid meet">
         {/* Backgrounds for each sorting stage */}
         {/* <rect x="0" y="0" width="1200" height="220" fill="#f1f5f9" opacity="0.3" />
         <rect x="0" y="220" width="1200" height="220" fill="#e0e7ef" opacity="0.3" />
@@ -353,42 +388,65 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
         <line x1="800" y1="60" x2="1150" y2="20" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="60" x2="1150" y2="60" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="60" x2="1150" y2="100" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
-        <text x="1175" y="13" fontSize="10" fill="#ef4444">Red Circle Sm</text>
-        <text x="1175" y="48" fontSize="10" fill="#ef4444">Red Circle Med</text>
-        <text x="1175" y="83" fontSize="10" fill="#ef4444">Red Circle Lg</text>
+        <text x="1175" y="20" fontSize="10" fill="#ef4444">Red Circle Sm</text>
+        <text x="1175" y="60" fontSize="10" fill="#ef4444">Red Circle Med</text>
+        <text x="1175" y="100" fontSize="10" fill="#ef4444">Red Circle Lg</text>
         {/* Red-Square */}
         <line x1="800" y1="180" x2="1150" y2="140" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="180" x2="1150" y2="180" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="180" x2="1150" y2="220" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
+        <text x="1175" y="140" fontSize="10" fill="#ef4444">Red Square Sm</text>
+        <text x="1175" y="180" fontSize="10" fill="#ef4444">Red Square Med</text>
+        <text x="1175" y="220" fontSize="10" fill="#ef4444">Red Square Lg</text>
         {/* Red-Triangle */}
         <line x1="800" y1="300" x2="1150" y2="260" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="300" x2="1150" y2="300" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="300" x2="1150" y2="340" stroke="#ef4444" strokeWidth="4" opacity="0.9" />
+        <text x="1175" y="260" fontSize="10" fill="#ef4444">Red Triangle Sm</text>
+        <text x="1175" y="300" fontSize="10" fill="#ef4444">Red Triangle Med</text>
+        <text x="1175" y="340" fontSize="10" fill="#ef4444">Red Triangle Lg</text>
         {/* Blue-Circle */}
         <line x1="800" y1="420" x2="1150" y2="380" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="420" x2="1150" y2="420" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="420" x2="1150" y2="460" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
+        <text x="1175" y="380" fontSize="10" fill="#3b82f6">Blue Circle Sm</text>
+        <text x="1175" y="420" fontSize="10" fill="#3b82f6">Blue Circle Med</text>
+        <text x="1175" y="460" fontSize="10" fill="#3b82f6">Blue Circle Lg</text>
         {/* Blue-Square */}
         <line x1="800" y1="540" x2="1150" y2="500" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="540" x2="1150" y2="540" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="540" x2="1150" y2="580" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
+        <text x="1175" y="500" fontSize="10" fill="#3b82f6">Blue Square Sm</text>
+        <text x="1175" y="540" fontSize="10" fill="#3b82f6">Blue Square Med</text>
+        <text x="1175" y="580" fontSize="10" fill="#3b82f6">Blue Square Lg</text>
         {/* Blue-Triangle */}
         <line x1="800" y1="660" x2="1150" y2="620" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="660" x2="1150" y2="660" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="660" x2="1150" y2="700" stroke="#3b82f6" strokeWidth="4" opacity="0.9" />
+        <text x="1175" y="620" fontSize="10" fill="#3b82f6">Blue Triangle Sm</text>
+        <text x="1175" y="660" fontSize="10" fill="#3b82f6">Blue Triangle Med</text>
+        <text x="1175" y="700" fontSize="10" fill="#3b82f6">Blue Triangle Lg</text>
         {/* Green-Circle */}
         <line x1="800" y1="780" x2="1150" y2="740" stroke="#10b981" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="780" x2="1150" y2="780" stroke="#10b981" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="780" x2="1150" y2="820" stroke="#10b981" strokeWidth="4" opacity="0.9" />
+        <text x="1175" y="740" fontSize="10" fill="#10b981">Green Circle Sm</text>
+        <text x="1175" y="780" fontSize="10" fill="#10b981">Green Circle Med</text>
+        <text x="1175" y="820" fontSize="10" fill="#10b981">Green Circle Lg</text>
         {/* Green-Square */}
         <line x1="800" y1="900" x2="1150" y2="860" stroke="#10b981" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="900" x2="1150" y2="900" stroke="#10b981" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="900" x2="1150" y2="940" stroke="#10b981" strokeWidth="4" opacity="0.9" />
+        <text x="1175" y="860" fontSize="10" fill="#10b981">Green Square Sm</text>
+        <text x="1175" y="900" fontSize="10" fill="#10b981">Green Square Med</text>
+        <text x="1175" y="940" fontSize="10" fill="#10b981">Green Square Lg</text>
         {/* Green-Triangle */}
         <line x1="800" y1="1020" x2="1150" y2="980" stroke="#10b981" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="1020" x2="1150" y2="1020" stroke="#10b981" strokeWidth="4" opacity="0.9" />
         <line x1="800" y1="1020" x2="1150" y2="1060" stroke="#10b981" strokeWidth="4" opacity="0.9" />
-
+        <text x="1175" y="980" fontSize="10" fill="#10b981">Green Triangle Sm</text>
+        <text x="1175" y="1020" fontSize="10" fill="#10b981">Green Triangle Med</text>
+        <text x="1175" y="1060" fontSize="10" fill="#10b981">Green Triangle Lg</text>
         {/* End lane counters for all 27 stations, spaced closer together */}
         {/* Example for a few, repeat for all 27 */}
         
@@ -685,11 +743,11 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
         })}
 
         {/* Labels */}
-        <text x="250" y="50" textAnchor="middle" fill="#22d3ee" fontSize="36" fontWeight="bold">
+        <text x="200" y="50" textAnchor="middle" fill="#22d3ee" fontSize="36" fontWeight="bold">
           Conveyor Sorting System
         </text>
         <text x="200" y="90" textAnchor="middle" fill="#9ca3af" fontSize="22">
-          Speed: {parameters.speed}% | Parts on Belt: {parts.length}
+          Speed: {parameters.speed}% | Parts on Belt: {parts.length} | Total Parts: {counters.reduce((a, b) => a + b, 0)}
         </text>
       </svg>
     </div>
