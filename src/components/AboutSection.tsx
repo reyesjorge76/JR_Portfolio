@@ -10,10 +10,10 @@ const AboutSection: React.FC = () => {
   ];
 
   const timeline = [
-    { year: '2023', title: 'Lead Automation Engineer', desc: 'Promoted to lead Industry 4.0 initiatives' },
-    { year: '2021', title: 'AI Integration Specialist', desc: 'Pioneered ML integration in manufacturing' },
-    { year: '2019', title: 'Senior Developer', desc: 'Led team of 5 engineers on major projects' },
-    { year: '2017', title: 'Automation Engineer', desc: 'Started journey in industrial automation' }
+    { year: '2022', title: 'Lead Systems Controls Engineer', desc: 'Promoted to lead Industry 4.0 initiatives' },
+    { year: '2020', title: 'Controls & Robotics Engineer', desc: 'Pioneered robotics solutions for manufacturing' },
+    { year: '2016', title: 'Maintenance Engineering Lead', desc: 'Led a team of 5 engineers on major project planning, design, build, and integration' },
+    { year: '2014', title: 'Global Automation Service Engineer', desc: 'Started a journey in Global Service Automation' }
   ];
 
   return (
@@ -31,7 +31,7 @@ const AboutSection: React.FC = () => {
           <div>
             <h3 className="text-2xl font-semibold text-cyan-400 mb-4">Engineering Excellence Meets Innovation</h3>
             <p className="text-gray-300 mb-4">
-              With over 8 years of experience in industrial automation and artificial intelligence, 
+              With over 15 years of experience in industrial automation and Electrical Engineering, 2 years in artificial intelligence and 2 years in software development, 
               I bridge the gap between traditional engineering and cutting-edge technology. 
               My passion lies in creating intelligent systems that not only automate processes 
               but also learn and adapt to optimize performance.
@@ -43,7 +43,7 @@ const AboutSection: React.FC = () => {
               innovative thinking to deliver solutions that exceed expectations.
             </p>
             <p className="text-gray-300">
-              When I'm not coding or designing control systems, you'll find me exploring 
+              When I'm not coding or designing controls or electrical systems, you'll find me exploring 
               the latest advancements in robotics, contributing to open-source projects, 
               or mentoring the next generation of engineers.
             </p>

@@ -48,7 +48,7 @@ const SkillsSection: React.FC = () => {
             </span>
           </h2>
           <p className="text-gray-400 text-lg max-w-3xl mx-auto">
-            Comprehensive expertise across industrial automation, artificial intelligence, and software development
+            Comprehensive expertise across Industrial automation, Electrical and Mechanical engineering, Artificial intelligence, and Software development
           </p>
         </div>
 

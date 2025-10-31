@@ -68,7 +68,7 @@ const ContactSection: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-gray-400 text-sm">Email</p>
-                    <p className="text-gray-200">john.doe@email.com</p>
+                    <p className="text-gray-200">reyesjorge76@hotmail.com</p>
                   </div>
                 </div>
                 
@@ -78,7 +78,7 @@ const ContactSection: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-gray-400 text-sm">Phone</p>
-                    <p className="text-gray-200">+1 (234) 567-8900</p>
+                    <p className="text-gray-200">269-419-4762</p>
                   </div>
                 </div>
                 
@@ -86,10 +86,10 @@ const ContactSection: React.FC = () => {
                   <div className="w-12 h-12 bg-cyan-500/10 rounded-lg flex items-center justify-center">
                     <MapPin className="w-6 h-6 text-cyan-400" />
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="text-gray-400 text-sm">Location</p>
                     <p className="text-gray-200">San Francisco, CA</p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
