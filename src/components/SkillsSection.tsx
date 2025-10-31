@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Brain, Code, Database, Cloud, Shield } from 'lucide-react';
+import { Cpu, Code, Brain, Shield, Settings2, Monitor, Activity, Eye, Waypoints, Framer, MonitorCogIcon, Bot, ShieldCheck, Component } from 'lucide-react';
 
 const SkillsSection: React.FC = () => {
   const skillCategories = [
@@ -7,33 +7,33 @@ const SkillsSection: React.FC = () => {
       title: 'PLC & Automation',
       icon: <Cpu className="w-6 h-6 text-cyan-400" />,
       skills: [
-        { name: 'Siemens TIA Portal', level: 95 },
+        { name: 'Siemens TIA Portal', level: 90 },
         { name: 'Allen-Bradley', level: 90 },
-        { name: 'SCADA Systems', level: 85 },
-        { name: 'HMI Development', level: 92 },
-        { name: 'Industrial Networks', level: 88 }
+        { name: 'SCADA Systems', level: 75 },
+        { name: 'HMI Development', level: 95 },
+        { name: 'Industrial Networks', level: 90 }
       ]
     },
     {
       title: 'AI & Machine Learning',
       icon: <Brain className="w-6 h-6 text-purple-400" />,
       skills: [
-        { name: 'TensorFlow', level: 88 },
-        { name: 'PyTorch', level: 85 },
-        { name: 'Computer Vision', level: 82 },
-        { name: 'NLP', level: 78 },
-        { name: 'Deep Learning', level: 86 }
+        { name: 'TensorFlow', level: 10 },
+        { name: 'PyTorch', level: 60 },
+        { name: 'Computer Vision', level: 55 },
+        { name: 'NLP', level: 20 },
+        { name: 'Deep Learning', level: 65 }
       ]
     },
     {
       title: 'Programming',
       icon: <Code className="w-6 h-6 text-green-400" />,
       skills: [
-        { name: 'Python', level: 95 },
-        { name: 'JavaScript/React', level: 90 },
-        { name: 'C++', level: 75 },
-        { name: 'SQL', level: 85 },
-        { name: 'Node.js', level: 88 }
+        { name: 'Python', level: 65 },
+        { name: 'JavaScript/React', level: 25 },
+        { name: 'C++', level: 50 },
+        { name: 'SQL', level: 75 },
+        { name: 'Node.js', level: 25 }
       ]
     }
   ];
@@ -88,12 +88,18 @@ const SkillsSection: React.FC = () => {
 
         <div className="mt-12 grid grid-cols-2 md:grid-cols-6 gap-4">
           {[
-            { icon: <Database className="w-8 h-8" />, name: 'MongoDB' },
-            { icon: <Cloud className="w-8 h-8" />, name: 'AWS' },
-            { icon: <Shield className="w-8 h-8" />, name: 'Docker' },
-            { icon: <Code className="w-8 h-8" />, name: 'Git' },
-            { icon: <Cpu className="w-8 h-8" />, name: 'IoT' },
-            { icon: <Brain className="w-8 h-8" />, name: 'MLOps' }
+            { icon: <Settings2 className="w-8 h-8" />, name: 'PLC Controls' },
+            { icon: <Monitor className="w-8 h-8" />, name: 'HMI Design' },
+            { icon: <Activity className="w-8 h-8" />, name: 'SCADA Systems' },
+            { icon: <Eye className="w-8 h-8" />, name: 'Vision Systems' },
+            { icon: <Cpu className="w-8 h-8" />, name: 'IoT Devices' },
+            { icon: <Waypoints className="w-8 h-8" />, name: 'Network Management' },
+            { icon: <Framer className="w-8 h-8" />, name: 'CAD Design' },
+            { icon: <MonitorCogIcon className="w-8 h-8" />, name: 'Embedded Systems' },
+            { icon: <Bot className="w-8 h-8" />, name: 'Industrial Robots' },
+            { icon: <Component className="w-8 h-8" />, name: 'UI/UX Design' },
+            { icon: <Shield className="w-8 h-8" />, name: 'Safety Systems' },
+            { icon: <ShieldCheck className="w-8 h-8" />, name: 'Regulatory Compliance' }
           ].map((tech, idx) => (
             <div
               key={idx}
