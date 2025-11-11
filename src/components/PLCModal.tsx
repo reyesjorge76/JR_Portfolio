@@ -28,6 +28,11 @@ const PLCModal: React.FC<PLCModalProps> = ({ isOpen, onClose, title, type }) => 
 
   const handleStart = () => setIsRunning(true);
   const handleStop = () => setIsRunning(false);
+  const handleReset = () => {
+    setIsRunning(false);
+    setParameters(prev => ({ ...prev, reset: true }));
+    setTimeout(() => setParameters(prev => ({ ...prev, reset: false })), 100);
+  };
 
   return (
     <div 
@@ -64,6 +69,62 @@ const PLCModal: React.FC<PLCModalProps> = ({ isOpen, onClose, title, type }) => 
           {type === 'battery' && <BatteryMixingSystem isRunning={isRunning} parameters={parameters} />}
           {type === 'conveyor' && <ConveyorSortingSystem isRunning={isRunning} parameters={parameters} />}
           {type === 'robot' && <RobotPickPlaceSystem isRunning={isRunning} parameters={parameters} />}
+        </div>
+
+        {/* Control Panel */}
+        <div className="bg-gray-800 border-t border-cyan-500/30 p-4">
+          <div className="flex flex-wrap gap-4 items-center justify-between">
+            <div className="flex gap-2">
+              <button
+                onClick={handleStart}
+                disabled={isRunning}
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-all disabled:cursor-not-allowed"
+              >
+                <Play size={20} /> Start
+              </button>
+              <button
+                onClick={handleStop}
+                disabled={!isRunning}
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-all disabled:cursor-not-allowed"
+              >
+                <Pause size={20} /> Stop
+              </button>
+              <button
+                onClick={handleReset}
+                className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+              >
+                <RotateCcw size={20} /> Reset
+              </button>
+            </div>
+            
+            {/* Parameters */}
+            <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col">
+                <label className="text-gray-400 text-sm mb-1">Speed (%)</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="100"
+                  value={parameters.speed}
+                  onChange={(e) => setParameters({ ...parameters, speed: Number(e.target.value) })}
+                  className="bg-gray-700 text-white px-3 py-2 rounded w-20 border border-cyan-500/30 focus:border-cyan-400 focus:outline-none"
+                />
+              </div>
+              {type === 'conveyor' && (
+                <div className="flex flex-col">
+                  <label className="text-gray-400 text-sm mb-1">Parts/Sec</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={parameters.partsPerSecond}
+                    onChange={(e) => setParameters({ ...parameters, partsPerSecond: Number(e.target.value) })}
+                    className="bg-gray-700 text-white px-3 py-2 rounded w-20 border border-cyan-500/30 focus:border-cyan-400 focus:outline-none"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
       </div>

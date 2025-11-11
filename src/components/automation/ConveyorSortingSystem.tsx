@@ -340,8 +340,8 @@ const ConveyorSortingSystem: React.FC<ConveyorSortingSystemProps> = ({ isRunning
   };
 
   return (
-    <div className="flex justify-center items-center w-full h-[100vh] min-h-[300px] max-h-[910px] bg-gray-900/50 rounded-lg p-4 overflow-x-auto">
-      <svg viewBox="0 0 1100 1080" className="w-full h-full max-w-full max-h-full min-w-[200px] min-h-[200px]" preserveAspectRatio="xMidYMid meet">
+    <div className="flex justify-center items-start w-full min-h-[400px] h-auto md:h-[100vh] md:max-h-[910px] bg-gray-900/50 rounded-lg p-2 md:p-4 overflow-auto">
+      <svg viewBox="-150 0 1350 1150" className="w-full h-auto md:h-full max-w-full min-w-[300px]" preserveAspectRatio="xMidYMid meet">
         {/* Backgrounds for each sorting stage */}
         {/* <rect x="0" y="0" width="1200" height="220" fill="#f1f5f9" opacity="0.3" />
         <rect x="0" y="220" width="1200" height="220" fill="#e0e7ef" opacity="0.3" />

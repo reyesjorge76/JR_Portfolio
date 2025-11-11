@@ -280,7 +280,7 @@ const BatteryMixingSystem: React.FC<BatteryMixingSystemProps> = ({ isRunning, pa
   return (
     <div className="rounded-lg flex flex-col items-stretch">
       <div className="flex-1 min-w-0">
-        <svg viewBox="0 0 900 900" className="w-full h-[300px] md:h-[700px]">
+        <svg viewBox="-100 0 1000 800" className="w-full h-[200px] md:h-[800px]">
         {/* Four Supply Tanks, spaced horizontally at the top */}
         <g transform="translate(170, 60)">
           <rect x="0" y="0" width="80" height="140" fill="none" stroke="#06b6d4" strokeWidth="2" rx="5" />
