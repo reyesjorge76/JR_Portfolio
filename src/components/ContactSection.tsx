@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, Mail, Phone, MapPin, CheckCircle } from 'lucide-react';
+import { Send, Mail, Phone, MapPin, CheckCircle, Github, Linkedin } from 'lucide-react';
 
 const ContactSection: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -67,8 +67,13 @@ const ContactSection: React.FC = () => {
                     <Mail className="w-6 h-6 text-cyan-400" />
                   </div>
                   <div>
+                    {/* email link */}
                     <p className="text-gray-400 text-sm">Email</p>
-                    <p className="text-gray-200">reyesjorge76@hotmail.com</p>
+                    <p className="text-gray-200">
+                      <a href="mailto:reyesjorge76@hotmail.com" className="hover:text-cyan-400">
+                        <Mail className="inline w-4 h-4 mr-1" /> reyesjorge76@hotmail.com
+                      </a>
+                    </p>
                   </div>
                 </div>
                 
@@ -77,8 +82,13 @@ const ContactSection: React.FC = () => {
                     <Phone className="w-6 h-6 text-purple-400" />
                   </div>
                   <div>
+                    {/* tel link */}
                     <p className="text-gray-400 text-sm">Phone</p>
-                    <p className="text-gray-200">269-419-4762</p>
+                    <p className="text-gray-200">
+                      <a href="tel:2694194762" className="hover:text-purple-400">
+                        <Phone className="inline w-4 h-4 mr-1" /> 269-419-4762
+                      </a>
+                    </p>
                   </div>
                 </div>
                 
@@ -95,16 +105,32 @@ const ContactSection: React.FC = () => {
 
               <div className="mt-8 pt-8 border-t border-gray-700">
                 <h4 className="text-lg font-semibold text-cyan-400 mb-4">Connect on Social</h4>
-                <div className="flex gap-4">
-                  {['LinkedIn', 'GitHub', 'Twitter'].map((social) => (
-                    <button
-                      key={social}
-                      onClick={() => alert(`Connect on ${social}`)}
-                      className="px-4 py-2 bg-gray-800 border border-cyan-500/30 rounded-lg text-gray-300 hover:bg-cyan-500/10 hover:border-cyan-400/50 transition-all duration-200"
-                    >
-                      {social}
-                    </button>
-                  ))}
+                <div className="flex gap-3">
+                  <a
+                    href="https://github.com/reyesjorge76"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-gray-800 border border-cyan-500/30 rounded-lg flex items-center justify-center text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all duration-200"
+                    aria-label="GitHub"
+                  >
+                    <Github className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/in/reyesjorge76-driven/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-gray-800 border border-cyan-500/30 rounded-lg flex items-center justify-center text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all duration-200"
+                    aria-label="LinkedIn"
+                  >
+                    <Linkedin className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="mailto:reyesjorge76@hotmail.com"
+                    className="w-10 h-10 bg-gray-800 border border-cyan-500/30 rounded-lg flex items-center justify-center text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all duration-200"
+                    aria-label="Email"
+                  >
+                    <Mail className="w-5 h-5" />
+                  </a>
                 </div>
               </div>
             </div>

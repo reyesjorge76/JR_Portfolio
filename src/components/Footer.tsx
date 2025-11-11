@@ -14,27 +14,27 @@ const Footer: React.FC = () => {
       { name: 'Automation', id: 'automation' },
       { name: 'AI Projects', id: 'ai-projects' },
       { name: 'Games', id: 'games' },
-      { name: 'All Projects', id: 'hero' }
+      // { name: 'All Projects', id: 'hero' }
     ],
-    About: [
-      { name: 'Skills', id: 'skills' },
-      { name: 'Experience', id: 'about' },
-      { name: 'Education', id: 'about' },
-      { name: 'Certifications', id: 'about' }
-    ],
-    Resources: [
-      { name: 'Blog', id: 'hero' },
-      { name: 'Tutorials', id: 'hero' },
-      { name: 'Documentation', id: 'hero' },
-      { name: 'GitHub', id: 'hero' }
-    ]
+    // About: [
+    //   { name: 'Skills', id: 'skills' },
+    //   { name: 'Experience', id: 'about' },
+    //   { name: 'Education', id: 'about' },
+    //   { name: 'Certifications', id: 'about' }
+    // ],
+
+    // Resources: [
+    //   { name: 'Blog', id: 'hero' },
+    //   { name: 'Tutorials', id: 'hero' },
+    //   { name: 'Documentation', id: 'hero' },
+    //   { name: 'GitHub', id: 'hero' }
+    // ]
   };
 
   const socialLinks = [
-    { icon: <Github className="w-5 h-5" />, name: 'GitHub', url: '#' },
-    { icon: <Linkedin className="w-5 h-5" />, name: 'LinkedIn', url: '#' },
-    { icon: <Twitter className="w-5 h-5" />, name: 'Twitter', url: '#' },
-    { icon: <Mail className="w-5 h-5" />, name: 'Email', url: '#' }
+    { icon: <Github className="w-5 h-5" />, name: 'GitHub', url: 'https://github.com/reyesjorge76' },
+    { icon: <Linkedin className="w-5 h-5" />, name: 'LinkedIn', url: 'https://www.linkedin.com/in/reyesjorge76-driven/' },
+    { icon: <Mail className="w-5 h-5" />, name: 'Email', url: 'mailto:reyesjorge76@hotmail.com' }
   ];
 
   return (
@@ -42,24 +42,12 @@ const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-4">
+            {/* <h3 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent mb-4">
               Portfolio
-            </h3>
+            </h3> */}
             <p className="text-gray-400 mb-4">
               Bridging automation and AI to create intelligent solutions for tomorrow's challenges.
             </p>
-            <div className="flex gap-3">
-              {socialLinks.map((social) => (
-                <button
-                  key={social.name}
-                  onClick={() => alert(`Connect on ${social.name}`)}
-                  className="w-10 h-10 bg-gray-800 border border-cyan-500/30 rounded-lg flex items-center justify-center text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all duration-200"
-                  aria-label={social.name}
-                >
-                  {social.icon}
-                </button>
-              ))}
-            </div>
           </div>
 
           {Object.entries(footerLinks).map(([category, links]) => (
@@ -84,7 +72,7 @@ const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              © 2025 Portfolio. All rights reserved.
+              © 2025 JReyes Portfolio. All rights reserved.
             </p>
             <div className="flex items-center gap-4">
               <button
