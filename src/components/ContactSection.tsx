@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, Mail, Phone, MapPin, CheckCircle, Github, Linkedin } from 'lucide-react';
+import { Send, Mail, Phone, MapPin, CheckCircle, Github, Linkedin, MessageCircle } from 'lucide-react';
 
 const ContactSection: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -25,6 +25,11 @@ const ContactSection: React.FC = () => {
     const newErrors = validateForm();
     
     if (Object.keys(newErrors).length === 0) {
+      // Send via WhatsApp
+      const whatsappMessage = `Name: ${formData.name}\nEmail: ${formData.email}\n${formData.subject ? `Subject: ${formData.subject}\n` : ''}Message: ${formData.message}`;
+      const whatsappUrl = `https://wa.me/12694194762?text=${encodeURIComponent(whatsappMessage)}`;
+      window.open(whatsappUrl, '_blank');
+      
       setIsSubmitted(true);
       setTimeout(() => {
         setFormData({ name: '', email: '', subject: '', message: '' });
@@ -131,6 +136,15 @@ const ContactSection: React.FC = () => {
                   >
                     <Mail className="w-5 h-5" />
                   </a>
+                  <a
+                    href="https://wa.me/12694194762"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 bg-gray-800 border border-green-500/30 rounded-lg flex items-center justify-center text-green-400 hover:bg-green-500/10 hover:border-green-400 transition-all duration-200"
+                    aria-label="WhatsApp"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                  </a>
                 </div>
               </div>
             </div>
@@ -203,10 +217,10 @@ const ContactSection: React.FC = () => {
                   
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/25 transform hover:-translate-y-1 transition-all duration-200 flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-green-600 to-green-500 text-white py-3 rounded-lg font-semibold hover:shadow-lg hover:shadow-green-500/25 transform hover:-translate-y-1 transition-all duration-200 flex items-center justify-center gap-2"
                   >
-                    <Send size={20} />
-                    Send Message
+                    <MessageCircle size={20} />
+                    Send via WhatsApp
                   </button>
                 </>
               )}
